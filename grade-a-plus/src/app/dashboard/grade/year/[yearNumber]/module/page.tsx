@@ -1,48 +1,51 @@
-"use client"
+// /dashboard/grade/year/[yearNumber]/module/page.tsx
+import { createClient } from "../../../../../utils/supabase/server";
+import { addModuleAction } from "../../../(actions)/addModuleAction";
+import AddModuleForm from "../../../(component)/AddModuleForm";
 
-export default function AddModuleForm({ yearId }: { yearId: string }) {
-    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+// Make this a Server Component to fetch data
+export default async function ModulePage({ params }: { params: { yearNumber: string } }) {
+    const yearNumber = params.yearNumber;
 
-        const formData = new FormData(event.currentTarget);
-        formData.append("yearId", yearId); // Add the yearId programmatically.
+    // Server-side data fetching to get the yearId
+    const supabase = await createClient();
 
-        fetch("/api/add-module", {
-            method: "POST",
-            body: formData,
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to add module");
-                return response.json();
-            })
-            .then(() => {
-                alert("Module added successfully!");
-            })
-            .catch((error) => {
-                console.error("Error adding module:", error.message);
-                alert("Failed to add module. Please try again.");
-            });
-    };
+    // Fetch the user first
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        // Handle unauthenticated users
+        return <div>Please log in to access this page</div>;
+    }
+
+    // Then fetch the year data using the year number
+    const { data: yearData, error } = await supabase
+        .from("years")
+        .select("id")
+        .eq("year_number", yearNumber)
+        .eq("user_id", user.id)
+        .single();
+
+    if (error || !yearData) {
+        return <div>Year not found or error loading data</div>;
+    }
+
+    const yearId = yearData.id;
 
     return (
-        <form onSubmit={handleFormSubmit} style={{ padding: "20px" }}>
-            <h2>Add a Module</h2>
-            <label>
-                Module Name:
-                <input type="text" name="moduleName" required />
-            </label>
-            <br />
-            <label>
-                Module Credit:
-                <input type="number" name="moduleCredit" min="1" max="120" required />
-            </label>
-            <br />
-            <label>
-                Module Weight (%):
-                <input type="number" name="moduleWeight" step="0.1" min="0" max="100" required />
-            </label>
-            <br />
-            <button type="submit">Add Module</button>
-        </form>
+        <div className="container mx-auto p-6">
+            {/* This is where you pass your AddModuleForm component as a "prop" to your page */}
+            <div className="bg-white rounded-lg shadow-md">
+                <AddModuleForm
+                    yearId={yearId}
+                    addModuleAction={addModuleAction}
+                />
+            </div>
+
+            {/* You can add additional UI elements to your page */}
+            <div className="mt-8">
+                {/* Add your module listing or other UI elements here */}
+            </div>
+        </div>
     );
 }
