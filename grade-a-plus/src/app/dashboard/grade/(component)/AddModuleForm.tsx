@@ -1,5 +1,6 @@
+
 // /dashboard/grade/(component)/AddModuleForm.tsx
-"use client";
+
 import React, { useState } from "react";
 
 export default function AddModuleForm({
