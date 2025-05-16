@@ -8,7 +8,7 @@ export default async function YearPage({ params }: { params: { yearNumber: strin
 
     const supabase = await createClient();
 
-    // Fetch year data
+    // Fetch years data
     const { data: yearData, error: yearError } = await supabase
         .from("years")
         .select("id, year_credit")

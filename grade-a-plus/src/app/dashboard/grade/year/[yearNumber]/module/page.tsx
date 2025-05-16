@@ -1,4 +1,4 @@
-// /dashboard/grade/year/[yearNumber]/module/page.tsx
+// /dashboard/grade/years/[yearNumber]/module/page.tsx
 import { createClient } from "../../../../../utils/supabase/server";
 import { addModuleAction } from "../../../(actions)/addModuleAction";
 import AddModuleForm from "../../../(component)/AddModuleForm";
@@ -18,7 +18,7 @@ export default async function ModulePage({ params }: { params: { yearNumber: str
         return <div>Please log in to access this page</div>;
     }
 
-    // Then fetch the year data using the year number
+    // Then fetch the years data using the years number
     const { data: yearData, error } = await supabase
         .from("years")
         .select("id")
