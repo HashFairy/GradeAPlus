@@ -1,62 +1,87 @@
 "use server";
 
-import { createClient } from '../../../utils/supabase/server';
-import { revalidatePath } from 'next/cache';
+import { createClient } from "@/app/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 
-export const addModuleAction = async (formData: FormData) => {
-    console.log("Starting addModuleAction...");
-
+export async function addModuleAction(formData: FormData) {
     // Extract and validate form data
-    const moduleName = formData.get("moduleName")?.toString().trim();
-    const moduleCreditStr = formData.get("moduleCredit")?.toString();
     const yearId = formData.get("yearId")?.toString();
-
-    // Log the raw form data for debugging
-    console.log("Raw formData entries:");
-    for (const [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value}`);
-    }
-
-    console.log("Parsed formData:");
-    console.log("  Module Name:", moduleName);
-    console.log("  Module Credit:", moduleCreditStr);
-    console.log("  YearId:", yearId);
+    const yearNumber = formData.get("yearNumber")?.toString();
+    const moduleName = formData.get("moduleName")?.toString();
+    const moduleCreditStr = formData.get("moduleCredit")?.toString();
 
     // Validate inputs
-    if (!moduleName) throw new Error("Module name cannot be empty.");
+    if (!yearId) {
+        return {error: "Year ID cannot be empty."};
+    }
 
-    const moduleCredit = moduleCreditStr ? parseInt(moduleCreditStr) : NaN;
-    if (!Number.isInteger(moduleCredit) || moduleCredit <= 0 || moduleCredit > 120)
-        throw new Error("Module credit must be a valid number between 1 and 120.");
+    if (!moduleName || moduleName.trim() === '') {
+        return {error: "Module name cannot be empty."};
+    }
 
-    if (!yearId) throw new Error("Year ID is missing!");
+    // Parse optional fields
+    let moduleCredit = null;
+    if (moduleCreditStr && moduleCreditStr.trim() !== '') {
+        moduleCredit = parseInt(moduleCreditStr);
+        if (isNaN(moduleCredit) || moduleCredit < 1 || moduleCredit > 100) {
+            return {error: "Module credit must be a valid number between 1 and 100."};
+        }
+    }
 
     // Initialize Supabase client
     const supabase = await createClient();
 
-    // Authenticate user
-    const {
-        data: {user},
-        error: authError,
-    } = await supabase.auth.getUser();
+    // Get authenticated user
+    const {data: {user}} = await supabase.auth.getUser();
+    if (!user) {
+        return {error: "User authentication is required."};
+    }
 
-    if (authError || !user) throw new Error("User authentication is required.");
+    // Verify the year exists and belongs to the user
+    const {data: year, error: yearError} = await supabase
+        .from("years")
+        .select("id")
+        .eq("id", yearId)
+        .eq("user_id", user.id)
+        .single();
 
-    // Insert module into database
-    const {error} = await supabase.from("modules").insert({
-        module_name: moduleName,
-        module_credit: moduleCredit,
-        year_id: yearId,
-        user_id: user.id,
-    });
+    if (yearError || !year) {
+        return {error: "Invalid year selected."};
+    }
+
+    // Check if a module with this name already exists for the year
+    const {data: existingModule} = await supabase
+        .from("modules")
+        .select("id")
+        .eq("module_name", moduleName)
+        .eq("year_id", yearId)
+        .eq("user_id", user.id)
+        .single();
+
+    if (existingModule) {
+        return {error: `Module "${moduleName}" already exists for this year.`};
+    }
+
+    // Insert module into database - only using the columns that exist in the schema
+    const {data: newModule, error} = await supabase
+        .from("modules")
+        .insert({
+            module_name: moduleName,
+            module_credit: moduleCredit,
+            year_id: yearId,
+            user_id: user.id,
+        })
+        .select()
+        .single();
 
     if (error) {
         console.error("Supabase insert error:", error);
-        throw new Error(`Failed to add module: ${error.message}`);
+        return {error: `Failed to add module: ${error.message}`};
     }
 
-    // Revalidate the path to refresh the UI
-    revalidatePath('/dashboard/grade/year/[yearNumber]', 'page');
+    // Revalidate paths to update UI
+    revalidatePath(`/dashboard/grade/year/${yearNumber}/module`);
 
-    return {success: true};
+    // Return success
+    return {success: true, module: newModule};
 }

@@ -1,78 +1,77 @@
-import { createClient } from '../../../utils/supabase/server'
+"use server";
 
+import { createClient } from '../../../utils/supabase/server';
+import { revalidatePath } from 'next/cache';
+
+// Note: Modified to work with modals - no redirect, just revalidate
 export const addAssessmentAction = async (formData: FormData) => {
-    // Parse form data
-    const assessmentName = formData.get("assessmentName")?.toString();
-    const assessmentWeight = parseFloat(formData.get("assessmentWeight")?.toString() || "");
-    const assessmentGrade = parseFloat(formData.get("assessmentGrade")?.toString() || "");
-    const moduleName = formData.get("moduleName")?.toString(); // Use moduleName
+    console.log("Starting addAssessmentAction...");
+
+    // Extract and validate form data
+    const assessmentName = formData.get("assessmentName")?.toString().trim();
+    const assessmentWeightStr = formData.get("assessmentWeight")?.toString();
+    const assessmentGradeStr = formData.get("assessmentGrade")?.toString();
+    const moduleId = formData.get("moduleId")?.toString();
+    const yearNumber = formData.get("yearNumber")?.toString();
+    const moduleSlug = formData.get("moduleSlug")?.toString();
+
+    // Log the raw form data for debugging
+    console.log("Raw formData entries:");
+    for (const [key, value] of formData.entries()) {
+        console.log(`  ${key}: ${value}`);
+    }
+
+    // Validate inputs
+    if (!assessmentName) throw new Error("Assessment name cannot be empty.");
+    if (!moduleId) throw new Error("Module ID is missing!");
+    if (!yearNumber) throw new Error("Year number is missing!");
+    if (!moduleSlug) throw new Error("Module slug is missing!");
+
+    // Parse assessment weight
+    const assessmentWeight = assessmentWeightStr ? parseInt(assessmentWeightStr) : NaN;
+    if (!Number.isInteger(assessmentWeight) || assessmentWeight <= 0 || assessmentWeight > 100)
+        throw new Error("Weight must be a valid number between 1 and 100.");
+
+    // Parse assessment grade if provided
+    let assessmentGrade = null;
+    if (assessmentGradeStr && assessmentGradeStr.trim() !== '') {
+        assessmentGrade = parseFloat(assessmentGradeStr);
+        if (isNaN(assessmentGrade) || assessmentGrade < 0 || assessmentGrade > 100)
+            throw new Error("Grade must be a valid number between 0 and 100.");
+    }
 
     // Initialize Supabase client
     const supabase = await createClient();
 
-    // Fetch authenticated user
+    // Authenticate user
     const {
-        data: {user},
+        data: { user },
         error: authError,
     } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-        console.error("User authentication failed:", authError?.message || "No user found");
-        throw new Error("User authentication is required");
-    }
+    if (authError || !user) throw new Error("User authentication is required.");
 
-    console.log("Authenticated user:", user);
-
-    // Validate inputs
-    if (
-        !assessmentName ||
-        !moduleName || // Ensure moduleName is provided
-        assessmentWeight < 0 ||
-        assessmentWeight > 100 ||
-        assessmentGrade < 0 ||
-        assessmentGrade > 100
-    ) {
-        console.error("Validation Error: Invalid assessment data", {
-            assessmentName,
-            moduleName,
-            assessmentWeight,
-            assessmentGrade,
-        });
-        throw new Error("Invalid assessment data. Please check the inputs.");
-    }
-
-    // Resolve moduleId from moduleName
-    console.log("Resolving module ID for moduleName:", moduleName);
-    const {data: moduleData, error: moduleError} = await supabase
-        .from("modules")
-        .select("id")
-        .eq("module_name", moduleName) // Match by module name
-        .eq("user_id", user.id) // Ensure the module belongs to the authenticated user
+    // Insert assessment into database
+    const { data: newAssessment, error } = await supabase
+        .from("assessments")
+        .insert({
+            assessment_name: assessmentName,
+            assessment_weight: assessmentWeight,
+            assessment_grade: assessmentGrade,
+            module_id: moduleId,
+            user_id: user.id,
+        })
+        .select()
         .single();
 
-    if (moduleError || !moduleData) {
-        console.error("Module verification failed:", moduleError?.message || "No matching module found");
-        throw new Error("You do not have access to this module or it does not exist");
+    if (error) {
+        console.error("Supabase insert error:", error);
+        throw new Error(`Failed to add assessment: ${error.message}`);
     }
 
-    const moduleId = moduleData.id;
-    console.log("Resolved module ID:", moduleId);
+    // Revalidate paths to update UI
+    revalidatePath(`/dashboard/grade/year/${yearNumber}/module/${moduleSlug}`);
 
-    // Insert the assessment into the 'assessments' table
-    console.log("Inserting assessment into the 'assessments' table...");
-    const {error: insertError} = await supabase.from("assessments").insert({
-        assessment_name: assessmentName,
-        assessment_weight: assessmentWeight,
-        assessment_grade: assessmentGrade,
-        module_id: moduleId, // Use the resolved moduleId
-        user_id: user.id,
-    });
-
-    if (insertError) {
-        console.error("Error adding assessment:", insertError.message);
-        throw new Error("Failed to add assessment");
-    }
-
-    console.log("Assessment added successfully!");
+    // Return success - no redirect needed as modal will close itself
+    return { success: true, assessment: newAssessment };
 };
-
