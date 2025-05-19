@@ -1,4 +1,4 @@
-// src/app/dashboard/page.tsx (or update existing)
+// src/app/dashboard/page.tsx
 import Link from "next/link";
 import { createClient } from "@/app/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -11,7 +11,7 @@ export default async function Dashboard() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        // Redirect to login if not authenticated
+        // Redirect to log in if not authenticated
         redirect("/login");
     }
 

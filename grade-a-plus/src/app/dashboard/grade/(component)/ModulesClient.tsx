@@ -5,7 +5,7 @@ import Modal from "../../../../components/Modal";
 
 interface AddAssessmentModalProps {
     isOpen: boolean;
-    onCloseAction: () => void; // Renamed from onClose to onCloseAction
+    onCloseAction: () => void;
     moduleId: string;
 }
 
@@ -18,7 +18,6 @@ export default function AddAssessmentModal({ isOpen, onCloseAction, moduleId }: 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Add your assessment creation logic here
 
         // After successful creation:
         onCloseAction();
