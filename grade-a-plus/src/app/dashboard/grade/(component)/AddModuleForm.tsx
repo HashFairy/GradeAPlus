@@ -7,7 +7,7 @@ import { addModuleAction } from "../(actions)/addModuleAction";
 interface AddModuleFormProps {
     yearId: string;
     yearNumber: string;
-    onSuccessAction?: () => void;
+    onSuccessAction?: () => void; // Renamed from onSuccess to onSuccessAction
 }
 
 export default function AddModuleForm({ yearId, yearNumber, onSuccessAction }: AddModuleFormProps) {
@@ -37,6 +37,7 @@ export default function AddModuleForm({ yearId, yearNumber, onSuccessAction }: A
 
             if (result.error) {
                 setError(result.error);
+                setIsSubmitting(false);
                 return;
             }
 

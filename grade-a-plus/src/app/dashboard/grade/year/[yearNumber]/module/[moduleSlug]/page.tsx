@@ -1,6 +1,6 @@
 //app/dashboard/grade/year/[yearNumber]/module/[moduleSlug]/layout.tsx
 
-import { createClient } from "../../../../../../utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 import { notFound } from "next/navigation";
 import AddAssessmentModalWrapper from './AddAssessmentModalWrapper';
 

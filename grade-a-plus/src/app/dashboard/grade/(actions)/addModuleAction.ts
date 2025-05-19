@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createClient } from "@/app/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
@@ -62,7 +63,7 @@ export async function addModuleAction(formData: FormData) {
         return {error: `Module "${moduleName}" already exists for this year.`};
     }
 
-    // Insert module into database - only using the columns that exist in the schema
+    // Insert module into database
     const {data: newModule, error} = await supabase
         .from("modules")
         .insert({
@@ -79,8 +80,14 @@ export async function addModuleAction(formData: FormData) {
         return {error: `Failed to add module: ${error.message}`};
     }
 
+
+
     // Revalidate paths to update UI
-    revalidatePath(`/dashboard/grade/year/${yearNumber}/module`);
+    // Make sure we're using the correct path format
+    if (yearNumber) {
+        revalidatePath(`/dashboard/grade/year/${yearNumber}/module`);
+    }
+    revalidatePath('/dashboard/grade');
 
     // Return success
     return {success: true, module: newModule};

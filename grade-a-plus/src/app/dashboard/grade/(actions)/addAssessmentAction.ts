@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from '../../../utils/supabase/server';
+import { createClient } from '@/app/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 // Note: Modified to work with modals - no redirect, just revalidate
@@ -15,8 +15,6 @@ export const addAssessmentAction = async (formData: FormData) => {
     const yearNumber = formData.get("yearNumber")?.toString();
     const moduleSlug = formData.get("moduleSlug")?.toString();
 
-    // Log the raw form data for debugging
-    console.log("Raw formData entries:");
     for (const [key, value] of formData.entries()) {
         console.log(`  ${key}: ${value}`);
     }

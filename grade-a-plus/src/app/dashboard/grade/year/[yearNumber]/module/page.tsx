@@ -71,6 +71,7 @@ export default async function ModulesListPage({
         return <div>Error loading modules</div>;
     }
 
+
     return (
         <div className="container mx-auto p-6">
             <ModulesClient
