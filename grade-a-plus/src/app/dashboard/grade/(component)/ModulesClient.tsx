@@ -1,85 +1,102 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import AddModuleForm from "./AddModuleForm";
-import Modal from "@/components/Modal";
+import Modal from "../../../../components/Modal";
 
-interface ModuleData {
-    id: string;
-    module_name: string;
-    module_credit: number | null;
+interface AddAssessmentModalProps {
+    isOpen: boolean;
+    onCloseAction: () => void; // Renamed from onClose to onCloseAction
+    moduleId: string;
 }
 
-interface ModulesClientProps {
-    modules: ModuleData[];
-    yearId: string;
-    yearNumber: string;
-}
+export default function AddAssessmentModal({ isOpen, onCloseAction, moduleId }: AddAssessmentModalProps) {
+    const [title, setTitle] = useState("");
+    const [weight, setWeight] = useState("");
+    const [grade, setGrade] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
 
-export default function ModulesClient({ modules, yearId, yearNumber }: ModulesClientProps) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        // Add your assessment creation logic here
 
-    // Function to generate a slug for a module
-    const createModuleSlug = (module: ModuleData) => {
-        // Convert module name to slug format and append ID
-        const nameSlug = module.module_name
-            .toLowerCase()
-            .replace(/[^\w\s]/g, '')
-            .replace(/\s+/g, '-');
-
-        return `${nameSlug}-${module.id}`;
+        // After successful creation:
+        onCloseAction();
     };
 
     return (
-        <>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Modules for Year {yearNumber}</h1>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-                >
-                    Add New Module
-                </button>
-            </div>
+        <Modal isOpen={isOpen} onCloseAction={onCloseAction} title="Add New Assessment">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                    <div className="p-3 bg-red-100 text-red-700 rounded-md">
+                        {error}
+                    </div>
+                )}
 
-            {modules.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                    <p className="text-gray-600">No modules added yet for Year {yearNumber}.</p>
-                    <p className="text-sm text-gray-500 mt-2">Click the "Add New Module" button to get started.</p>
+                <div>
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                        Assessment Title*
+                    </label>
+                    <input
+                        type="text"
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="e.g., Midterm Exam, Final Project"
+                        required
+                    />
                 </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {modules.map((module) => {
-                        const moduleSlug = createModuleSlug(module);
-                        return (
-                            <Link
-                                key={module.id}
-                                href={`/dashboard/grade/year/${yearNumber}/module/${moduleSlug}`}
-                            >
-                                <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                                    <h2 className="text-xl font-semibold mb-2">{module.module_name}</h2>
-                                    {module.module_credit !== null && (
-                                        <p className="text-gray-600">{module.module_credit} Credits</p>
-                                    )}
-                                </div>
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
 
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title={`Add New Module to Year ${yearNumber}`}
-            >
-                <AddModuleForm
-                    yearId={yearId}
-                    yearNumber={yearNumber}
-                    onSuccess={() => setIsModalOpen(false)}
-                />
-            </Modal>
-        </>
+                <div>
+                    <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-1">
+                        Weight (%)
+                    </label>
+                    <input
+                        type="number"
+                        id="weight"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                        min="0"
+                        max="100"
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="e.g., 25 for 25%"
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">
+                        Grade (%)
+                    </label>
+                    <input
+                        type="number"
+                        id="grade"
+                        value={grade}
+                        onChange={(e) => setGrade(e.target.value)}
+                        min="0"
+                        max="100"
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="e.g., 85 for 85%"
+                    />
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                    <button
+                        type="button"
+                        onClick={onCloseAction}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? "Adding..." : "Add Assessment"}
+                    </button>
+                </div>
+            </form>
+        </Modal>
     );
 }

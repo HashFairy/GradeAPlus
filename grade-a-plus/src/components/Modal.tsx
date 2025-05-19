@@ -5,12 +5,12 @@ import { XCircle } from "lucide-react";
 
 interface ModalProps {
     isOpen: boolean;
-    onClose: () => void;
+    onCloseAction: () => void; // Renamed from onClose to onCloseAction
     title: string;
     children: React.ReactNode;
 }
 
-export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export default function Modal({ isOpen, onCloseAction, title, children }: ModalProps) {
     const [mounted, setMounted] = useState(false);
 
     // Handle ESC key press to close modal
@@ -19,7 +19,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 
         const handleEscapeKey = (e: KeyboardEvent) => {
             if (e.key === "Escape" && isOpen) {
-                onClose();
+                onCloseAction();
             }
         };
 
@@ -34,7 +34,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
             document.removeEventListener("keydown", handleEscapeKey);
             document.body.style.overflow = "unset";
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, onCloseAction]);
 
     // Don't render on server to avoid hydration mismatch
     if (!mounted) return null;
@@ -45,8 +45,8 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Backdrop */}
             <div
-                className="absolute inset-0  bg-opacity-30 backdrop-blur-sm"
-                onClick={onClose}
+                className="absolute inset-0 bg-gray-300 bg-opacity-30 backdrop-blur-sm"
+                onClick={onCloseAction}
                 aria-hidden="true"
             />
 
@@ -57,7 +57,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 <div className="flex justify-between items-center p-4 border-b">
                     <h2 className="text-xl font-semibold">{title}</h2>
                     <button
-                        onClick={onClose}
+                        onClick={onCloseAction}
                         className="text-gray-500 hover:text-gray-700"
                         aria-label="Close"
                     >

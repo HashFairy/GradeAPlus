@@ -7,10 +7,10 @@ import { addModuleAction } from "../(actions)/addModuleAction";
 interface AddModuleFormProps {
     yearId: string;
     yearNumber: string;
-    onSuccess?: () => void;
+    onSuccessAction?: () => void;
 }
 
-export default function AddModuleForm({ yearId, yearNumber, onSuccess }: AddModuleFormProps) {
+export default function AddModuleForm({ yearId, yearNumber, onSuccessAction }: AddModuleFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [moduleName, setModuleName] = useState("");
@@ -47,9 +47,9 @@ export default function AddModuleForm({ yearId, yearNumber, onSuccess }: AddModu
             // Refresh the page to show the new module
             router.refresh();
 
-            // Call onSuccess callback if provided
-            if (onSuccess) {
-                onSuccess();
+            // Call onSuccessAction callback if provided
+            if (onSuccessAction) {
+                onSuccessAction();
             }
 
         } catch (error) {
