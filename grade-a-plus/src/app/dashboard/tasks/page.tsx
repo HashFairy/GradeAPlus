@@ -1,4 +1,3 @@
-// src/app/dashboard/tasks/page.tsx
 import { createClient } from "@/app/utils/supabase/server";
 import TasksList from "./(component)/TasksList";
 

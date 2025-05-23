@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import {
     BellIcon,
@@ -11,10 +12,7 @@ import {
     Cog8ToothIcon,
     SwatchIcon,
     LanguageIcon,
-    MoonIcon,
 } from '@heroicons/react/24/outline';
-import Image from 'next/image';
-import Link from 'next/link';
 
 // Types
 type SettingsNavItem = {
@@ -26,7 +24,7 @@ type SettingsNavItem = {
 
 type ColorScheme = 'light' | 'dark' | 'system';
 type NotificationType = 'all' | 'mentions' | 'none';
-type Language = 'en' | 'fr' | 'es' | 'de' | 'zh';
+type Language = 'en-GB' | 'en-US' | 'fr' | 'es' | 'de' | 'zh';
 
 // Settings state interface
 interface SettingsState {
@@ -39,7 +37,7 @@ interface SettingsState {
     autoSave: boolean;
 }
 
-export default function Settings() {
+export default function SettingsPage(): React.ReactNode {
     // Settings navigation state
     const [activeSection, setActiveSection] = useState<string>('profile');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -51,16 +49,15 @@ export default function Settings() {
         pushNotifications: true,
         notificationType: 'mentions',
         twoFactorEnabled: false,
-        language: 'en',
+        language: 'en-GB',
         autoSave: true,
     });
 
     // User profile state
     const [profile, setProfile] = useState({
         name: 'Alex Johnson',
-        email: 'alex.johnson@example.com',
-        avatar: '/api/placeholder/400/400',
-        role: 'Software Engineer',
+        email: 'alex.johnson@example.co.uk',
+        role: 'Software Engineer'
     });
 
     // Navigation items
@@ -133,13 +130,11 @@ export default function Settings() {
                                         id="user-menu-button"
                                     >
                                         <span className="sr-only">Open user menu</span>
-                                        <Image
-                                            className="h-8 w-8 rounded-full"
-                                            src={profile.avatar}
-                                            alt=""
-                                            width={32}
-                                            height={32}
-                                        />
+                                        <span className="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+                      <svg fill="currentColor" viewBox="0 0 24 24" className="h-full w-full text-gray-300">
+                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    </span>
                                     </button>
                                 </div>
                             </div>
@@ -241,13 +236,11 @@ export default function Settings() {
 
                                     <div className="mt-6 flex items-center">
                                         <div className="flex-shrink-0">
-                                            <Image
-                                                className="h-20 w-20 rounded-full"
-                                                src={profile.avatar}
-                                                alt=""
-                                                width={80}
-                                                height={80}
-                                            />
+                      <span className="inline-block h-20 w-20 overflow-hidden rounded-full bg-gray-100">
+                        <svg fill="currentColor" viewBox="0 0 24 24" className="h-full w-full text-gray-300">
+                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </span>
                                         </div>
                                         <div className="ml-5">
                                             <button
@@ -283,7 +276,7 @@ export default function Settings() {
 
                                         <div className="sm:col-span-3">
                                             <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                                                Role
+                                                Job Title
                                             </label>
                                             <div className="mt-2">
                                                 <input
@@ -548,23 +541,15 @@ export default function Settings() {
                                                 <li className="flex items-center justify-between py-4">
                                                     <div className="flex min-w-0 flex-1 items-center">
                                                         <div className="flex-shrink-0">
-                                                            <svg
-                                                                className="h-12 w-12 text-gray-400"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                            >
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth={1}
-                                                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                                                />
-                                                            </svg>
+                              <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                                <svg fill="currentColor" viewBox="0 0 24 24" className="h-full w-full text-gray-300">
+                                  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                              </span>
                                                         </div>
                                                         <div className="min-w-0 flex-1 px-4">
                                                             <p className="truncate text-sm font-medium text-gray-900">MacBook Pro</p>
-                                                            <p className="mt-1 truncate text-sm text-gray-500">Chrome • New York, USA</p>
+                                                            <p className="mt-1 truncate text-sm text-gray-500">Chrome • London, UK</p>
                                                             <p className="mt-1 text-xs text-green-500">Current session</p>
                                                         </div>
                                                     </div>
@@ -578,23 +563,15 @@ export default function Settings() {
                                                 <li className="flex items-center justify-between py-4">
                                                     <div className="flex min-w-0 flex-1 items-center">
                                                         <div className="flex-shrink-0">
-                                                            <svg
-                                                                className="h-12 w-12 text-gray-400"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                            >
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth={1}
-                                                                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                                                />
-                                                            </svg>
+                              <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                                <svg fill="currentColor" viewBox="0 0 24 24" className="h-full w-full text-gray-300">
+                                  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                              </span>
                                                         </div>
                                                         <div className="min-w-0 flex-1 px-4">
                                                             <p className="truncate text-sm font-medium text-gray-900">iPhone 12</p>
-                                                            <p className="mt-1 truncate text-sm text-gray-500">Safari • Boston, USA</p>
+                                                            <p className="mt-1 truncate text-sm text-gray-500">Safari • Manchester, UK</p>
                                                             <p className="mt-1 text-xs text-gray-500">Last active 2 days ago</p>
                                                         </div>
                                                     </div>
@@ -644,7 +621,8 @@ export default function Settings() {
                                             onChange={(e) => updateSetting('language', e.target.value as Language)}
                                             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
                                         >
-                                            <option value="en">English</option>
+                                            <option value="en-GB">English (UK)</option>
+                                            <option value="en-US">English (US)</option>
                                             <option value="fr">Français</option>
                                             <option value="es">Español</option>
                                             <option value="de">Deutsch</option>
@@ -660,9 +638,10 @@ export default function Settings() {
                                             id="date-format"
                                             name="date-format"
                                             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
+                                            defaultValue="DD/MM/YYYY"
                                         >
-                                            <option>MM/DD/YYYY</option>
                                             <option>DD/MM/YYYY</option>
+                                            <option>MM/DD/YYYY</option>
                                             <option>YYYY-MM-DD</option>
                                         </select>
                                     </div>
@@ -675,9 +654,10 @@ export default function Settings() {
                                             id="time-format"
                                             name="time-format"
                                             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
+                                            defaultValue="24-hour"
                                         >
-                                            <option>12-hour (1:30 PM)</option>
-                                            <option>24-hour (13:30)</option>
+                                            <option value="24-hour">24-hour (13:30)</option>
+                                            <option value="12-hour">12-hour (1:30 PM)</option>
                                         </select>
                                     </div>
 
@@ -760,7 +740,7 @@ export default function Settings() {
                                 </div>
                             )}
 
-                            {/* Other sections would go here */}
+                            {/* Password Section */}
                             {activeSection === 'password' && (
                                 <div className="px-4 py-5 sm:p-6">
                                     <h2 className="text-base font-semibold leading-6 text-gray-900">Change Password</h2>
@@ -829,6 +809,7 @@ export default function Settings() {
                                 </div>
                             )}
 
+                            {/* Billing Section */}
                             {activeSection === 'billing' && (
                                 <div className="px-4 py-5 sm:p-6">
                                     <h2 className="text-base font-semibold leading-6 text-gray-900">Billing & Subscription</h2>
@@ -853,9 +834,9 @@ export default function Settings() {
                                                     </svg>
                                                 </div>
                                                 <div className="ml-3 flex-1">
-                                                    <h3 className="text-sm font-medium text-blue-800">Pro Plan - $15/month</h3>
+                                                    <h3 className="text-sm font-medium text-blue-800">Pro Plan - £12/month</h3>
                                                     <div className="mt-2 text-sm text-blue-700">
-                                                        <p>Your subscription renews on May 31, 2025.</p>
+                                                        <p>Your subscription renews on 31 May 2025.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -915,9 +896,9 @@ export default function Settings() {
                                                     <tbody className="divide-y divide-gray-200 bg-white">
                                                     <tr>
                                                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-6">
-                                                            April 21, 2025
+                                                            21 April 2025
                                                         </td>
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$15.00</td>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">£12.00</td>
                                                         <td className="whitespace-nowrap px-3 py-4 text-sm">
                                 <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                   Paid
@@ -931,9 +912,9 @@ export default function Settings() {
                                                     </tr>
                                                     <tr>
                                                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-6">
-                                                            March 21, 2025
+                                                            21 March 2025
                                                         </td>
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$15.00</td>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">£12.00</td>
                                                         <td className="whitespace-nowrap px-3 py-4 text-sm">
                                 <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                   Paid

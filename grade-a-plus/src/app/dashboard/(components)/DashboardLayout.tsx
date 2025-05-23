@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -19,7 +19,7 @@ import {
     XMarkIcon,
     Cog6ToothIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: () => (
@@ -39,7 +39,7 @@ const navigation = [
 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
     </svg>
 ) },
-{ name: 'Calendar', href: '/dashboard/calendar', icon: () => (
+{ name: 'Calendar', href: '/dashboard/tasks/calendar', icon: () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="size-6 shrink-0">
 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
@@ -53,7 +53,7 @@ const navigation = [
 
 const userNavigation = [
     { name: 'Your profile', href: '/dashboard/profile' },
-    { name: 'Settings', href: '/dashboard/settings' },
+    { name: 'Settings', href: 'app/settings' },
     { name: 'Sign out', href: '#' },
 ]
 
@@ -121,7 +121,7 @@ export default function DashboardLayout({ children, user }) {
     </li>
     <li className="mt-auto">
     <Link
-        href="/dashboard/settings"
+        href="/settings"
     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white hover:bg-indigo-700 hover:text-white"
     >
     <Cog6ToothIcon
@@ -196,22 +196,12 @@ export default function DashboardLayout({ children, user }) {
     <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
 
     <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-    <form action="#" method="GET" className="flex flex-1 items-center">
+    <form  className="flex flex-1 items-center">
     <label htmlFor="search-field" className="sr-only">
         Search
         </label>
         <div className="relative w-full">
-    <MagnifyingGlassIcon
-        className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-    aria-hidden="true"
-    />
-    <input
-        id="search-field"
-    className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-    placeholder="Search..."
-    type="search"
-    name="search"
-        />
+
         </div>
         </form>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
