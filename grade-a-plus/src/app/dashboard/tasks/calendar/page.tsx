@@ -113,7 +113,7 @@ const TaskCalendar = ({
                 {/* Calendar days */}
                 {calendarDays.map((day, index) => {
                     if (!day) {
-                        return <div key={index} className="bg-white h-24"></div>;
+                        return <div key={`empty-${index}`} className="bg-white h-24"></div>;
                     }
 
                     const dayTasks = getTasksForDate(day);
@@ -122,7 +122,7 @@ const TaskCalendar = ({
 
                     return (
                         <div
-                            key={day}
+                            key={`day-${day}`}
                             className={`bg-white h-24 p-2 cursor-pointer hover:bg-gray-50 ${
                                 isToday ? 'ring-2 ring-indigo-500' : ''
                             }`}
